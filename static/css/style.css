@@ -100,3 +100,18 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+.log-container {
+    margin-top: 2rem;
+}
+
+#logs {
+    background-color: #222;
+    color: #eee;
+    padding: 1rem;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 300px;
+    overflow-y: auto;
+}
