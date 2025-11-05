@@ -1,16 +1,16 @@
-from playwright.async_api import async_playwright
+from playwright.async_api import async_playwright # pyright: ignore[reportMissingImports]
 import json
 import asyncio
 from bs4 import BeautifulSoup
 import os
 from urllib.parse import urljoin
-from dotenv import load_dotenv
+from dotenv import load_dotenv # type: ignore
 
 # Load credentials from .env file
 load_dotenv()
 
-USERNAME = os.getenv("SITE_USERNAME", "Ali")
-PASSWORD = os.getenv("SITE_PASSWORD", "123456")
+# USERNAME = os.getenv("SITE_USERNAME")
+# PASSWORD = os.getenv("SITE_PASSWORD")
 
 BASE_URL = "https://www.340bpriceguide.net"
 

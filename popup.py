@@ -1,6 +1,6 @@
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import sync_playwright # type: ignore
 import json, time, os
-from dotenv import load_dotenv
+from dotenv import load_dotenv # type: ignore
 
 load_dotenv()
 
@@ -142,12 +142,10 @@ def login_section(username=None, password=None, headless=False, base_folder=".")
     import os
     load_dotenv()
 
-    env_user = os.getenv("SITE_USERNAME")
-    env_pass = os.getenv("SITE_PASSWORD")
+    # env_user = os.getenv("SITE_USERNAME")
+    # env_pass = os.getenv("SITE_PASSWORD")
 
     # If credentials not provided, fall back to .env
-    username = username or env_user
-    password = password or env_pass
 
     if not username or not password:
         raise ValueError("❌ Username and Password are required (either from input or .env).")

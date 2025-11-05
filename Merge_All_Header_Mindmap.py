@@ -19,8 +19,8 @@ def merge_mindmaps(base_folder):
     output_path = os.path.join(base_folder, "Full_Website_Structure.mm")
 
     # --- Validate paths ---
-    if not os.path.exists(master_path):
-        raise FileNotFoundError(f"❌ Master mindmap not found: {master_path}")
+    # if not os.path.exists(master_path):
+    #     raise FileNotFoundError(f"❌ Master mindmap not found: {master_path}")
     if not os.path.exists(mindmap_folder):
         raise FileNotFoundError(f"❌ Mindmap folder not found: {mindmap_folder}")
 

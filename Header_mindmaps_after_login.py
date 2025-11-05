@@ -1,14 +1,14 @@
 import os
 import json
 import asyncio
-import google.generativeai as genai
-from dotenv import load_dotenv
+import google.generativeai as genai # pyright: ignore[reportMissingImports]
+from dotenv import load_dotenv # type: ignore
 
 # -------------------------------
 # CONFIGURATION
 # -------------------------------
 load_dotenv()
-GOOGLE_API_KEY = "AIzaSyDDoos-ITDh0hl694HB2um_iqdu36jREAw"  # ⚠️ Replace with your own key
+GOOGLE_API_KEY = os.getenv("GEMINI_API_KEY")  # ⚠️ Replace with your own key
 genai.configure(api_key=GOOGLE_API_KEY)
 
 

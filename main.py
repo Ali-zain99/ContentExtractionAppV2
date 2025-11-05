@@ -20,6 +20,15 @@ if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 app = Flask(__name__, static_folder='static', static_url_path='/static')
+# Set the logging level for socketio and engineio to WARNING to reduce verbosity
+logging.getLogger('socketio').setLevel(logging.WARNING)
+logging.getLogger('engineio').setLevel(logging.WARNING)
+
+
+# Set the logging level for socketio and engineio to WARNING to reduce verbosity
+logging.getLogger('socketio').setLevel(logging.WARNING)
+logging.getLogger('engineio').setLevel(logging.WARNING)
+
 setup_logging(app)
 
 @app.route('/')
@@ -58,7 +67,7 @@ def extract():
             logging.info(f"!!!!!!!!!!!!!!!!!!! {folder_name} folder already created!!!!!!!!!!!!!")
         # Run the new extractor function
         json_file_path = os.path.join(folder_name, "header_links.json")
-        links_file = extract_all_links_with_submenus(url, headless=headless, output_file=json_file_path)
+        links_file = extract_all_links_with_submenus(url, output_file=json_file_path)
 
         if not links_file or not os.path.exists(links_file):
             return jsonify({'error': 'Failed to create header_links.json file'}), 500
@@ -111,11 +120,11 @@ def extract():
                 if username and password:
                     logging.info("🔐 Starting login section...")
                     from ScreenShot_node_After_Login import login_and_get_context
-                    from playwright.async_api import async_playwright
+                    from playwright.async_api import async_playwright # type: ignore
 
                     async def main_login():
                         async with async_playwright() as p:
-                            browser, context = await login_and_get_context(p, username, password, headless)
+                            browser, context = await login_and_get_context(p, username, password,headless=headless)
                             if context:
                                 # Continue with the rest of the after-login process
                                 from Header_Links_Ectractor_After_Login import extract_header_links_and_screenshots
@@ -123,7 +132,7 @@ def extract():
                                 from Merge_all_header_mindmap_After_Login import merge_mindmaps
                                 from Validation_Mindmap_After_login import validation_after_login
 
-                                await extract_header_links_and_screenshots(username, password, domain_folder, headless=headless)
+                                await extract_header_links_and_screenshots(username, password, domain_folder)
                                 await header(base_folder=domain_folder)
                                 merge_mindmaps(base_folder=domain_folder)
                                 validation_after_login(base_folder=domain_folder)
@@ -133,7 +142,7 @@ def extract():
 
                     logging.info("📸 Capturing screenshots after login...")
                     from ScreenShot_node_After_Login import Screenshot
-                    asyncio.run(Screenshot(username=username, password=password, base_folder=domain_folder))
+                    asyncio.run(Screenshot(username=username, password=password, base_folder=domain_folder, headless=headless))
                     logging.info("✅ Screenshots after login captured.")
 
                     # 🧠 Merge all MindMaps into a single file

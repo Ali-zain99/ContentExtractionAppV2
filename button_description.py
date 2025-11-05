@@ -137,11 +137,11 @@ def process_mindmap(input_file, output_file):
 # ========================
 # Runner
 # ========================
-if __name__ == "__main__":
-    INPUT_MM = r"Merged_Website_Structure.mm"
-    OUTPUT_MM = r"Collapsed_Website_Structure_with_Descriptions.mm"
+# if __name__ == "__main__":
+#     INPUT_MM = r"Merged_Website_Structure.mm"
+#     OUTPUT_MM = r"Collapsed_Website_Structure_with_Descriptions.mm"
 
-    if not os.path.exists(INPUT_MM):
-        print("❌ Input file not found.")
-    else:
-        process_mindmap(INPUT_MM, OUTPUT_MM)
+#     if not os.path.exists(INPUT_MM):
+#         print("❌ Input file not found.")
+#     else:
+#         process_mindmap(INPUT_MM, OUTPUT_MM)

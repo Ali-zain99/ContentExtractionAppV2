@@ -115,3 +115,6 @@ a:hover {
     max-height: 300px;
     overflow-y: auto;
 }
+.form-group {
+    margin-top: 15px;
+}

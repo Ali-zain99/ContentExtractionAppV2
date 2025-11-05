@@ -10,7 +10,7 @@ import google.generativeai as genai # pyright: ignore[reportMissingImports]
 def configure_gemini():
     """Configure Google Gemini API key."""
     
-    GOOGLE_API_KEY = "AIzaSyDDoos-ITDh0hl694HB2um_iqdu36jREAw" 
+    GOOGLE_API_KEY = os.getenv("GEMINI_API_KEY")
     if not GOOGLE_API_KEY:
         raise ValueError("❌ GOOGLE_API_KEY not set. Please set it as an environment variable.")
     genai.configure(api_key=GOOGLE_API_KEY)

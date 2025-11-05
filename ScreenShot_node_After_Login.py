@@ -2,7 +2,10 @@ import os
 import re
 import asyncio
 import xml.etree.ElementTree as ET
-from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
+from dotenv import load_dotenv # pyright: ignore[reportMissingImports]
+
+load_dotenv()
+from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError # pyright: ignore[reportMissingImports]
 
 # === CONFIG ===
 # INPUT_MM = "Full_Website_Structure_After_Login_updated.mm"
@@ -14,8 +17,8 @@ AUTH_STATE = "auth_state.json"  # 🔹 Saves login session here
 
 # === LOGIN CONFIG ===
 LOGIN_URL = "https://www.340bpriceguide.net/client-login"
-DEFAULT_USERNAME = os.getenv("SITE_USERNAME", "Ali")
-DEFAULT_PASSWORD = os.getenv("SITE_PASSWORD", "123456")
+# DEFAULT_USERNAME = os.getenv("SITE_USERNAME", "")
+# DEFAULT_PASSWORD = os.getenv("SITE_PASSWORD", "")
 
 
 # os.makedirs(SCREENSHOT_DIR, exist_ok=True)
@@ -27,7 +30,7 @@ def safe_filename(url: str) -> str:
     return safe[:150]
 
 
-async def login_and_get_context(p, username=DEFAULT_USERNAME, password=DEFAULT_PASSWORD, headless=True):
+async def login_and_get_context(p, username, password, headless=True):
     """Logs in (or reuses saved session) and returns authenticated context."""
     browser = await p.chromium.launch(headless=headless)
     context = None
@@ -157,7 +160,7 @@ def add_screenshot_node(parent_node, screenshot_path):
     parent_node.append(node)
 
 
-async def Screenshot(username=DEFAULT_USERNAME, password=DEFAULT_PASSWORD, base_folder="."):
+async def Screenshot(username, password, base_folder=".", headless=True):
     INPUT_MM = os.path.join(base_folder, "Full_Website_Structure_After_Login_updated.mm")
     OUTPUT_MM = os.path.join(base_folder, "Full_Website_Structure_After_Login_updated_with_Screenshot.mm")
     SCREENSHOT_DIR = os.path.join(base_folder, "hyperlink_screenshots_After_Login")

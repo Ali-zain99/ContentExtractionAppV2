@@ -4,7 +4,7 @@ from playwright.async_api import async_playwright
 import os
 from domain_extractor import extract_domain  # Make sure this exist
 
-async def extract_header_links(url, folder_name, headless=False):
+async def extract_header_links(url, folder_name, headless=True):
     """Extract header links and return them"""
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=headless, slow_mo=200)

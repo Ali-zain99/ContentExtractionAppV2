@@ -19,7 +19,7 @@ document.getElementById('extractor-form').addEventListener('submit', async funct
     const url = document.getElementById('url').value.trim();
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
-    const headless = document.getElementById('headless').checked;
+    // const headless = document.getElementById('headless').checked;
 
     const spinner = document.getElementById('spinner');
     const resultsContainer = document.getElementById('results-container');
@@ -40,7 +40,7 @@ document.getElementById('extractor-form').addEventListener('submit', async funct
         const response = await fetch('/extract', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url, username, password, headless })
+            body: JSON.stringify({ url, username, password})
         });
 
         const data = await response.json();
