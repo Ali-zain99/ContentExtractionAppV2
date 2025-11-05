@@ -67,7 +67,7 @@ def extract():
             logging.info(f"!!!!!!!!!!!!!!!!!!! {folder_name} folder already created!!!!!!!!!!!!!")
         # Run the new extractor function
         json_file_path = os.path.join(folder_name, "header_links.json")
-        links_file = extract_all_links_with_submenus(url, output_file=json_file_path)
+        links_file = extract_all_links_with_submenus(url, headless=headless, output_file=json_file_path)
 
         if not links_file or not os.path.exists(links_file):
             return jsonify({'error': 'Failed to create header_links.json file'}), 500
