@@ -166,7 +166,7 @@ async def Screenshot(username, password, base_folder=".", headless=True):
     SCREENSHOT_DIR = os.path.join(base_folder, "hyperlink_screenshots_After_Login")
     os.makedirs(SCREENSHOT_DIR, exist_ok=True)
     async with async_playwright() as p:
-        browser, context = await login_and_get_context(p, username, password)
+        browser, context = await login_and_get_context(p, username, password, headless=headless)
         tree = ET.parse(INPUT_MM)
         root = tree.getroot()
 

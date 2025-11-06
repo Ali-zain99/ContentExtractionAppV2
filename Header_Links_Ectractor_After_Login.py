@@ -34,7 +34,7 @@ async def extract_links_from_page(page, page_url):
     return links
 
 
-async def extract_header_links_and_screenshots(username, password, base_folder=".", headless=False):
+async def extract_header_links_and_screenshots(username, password, base_folder=".", headless=True):
     HEADERS_FOLDER = os.path.join(base_folder, "headers_After_Login")
     SCREENSHOT_FOLDER = os.path.join(base_folder, "screenshots_After_Login")
     os.makedirs(HEADERS_FOLDER, exist_ok=True)

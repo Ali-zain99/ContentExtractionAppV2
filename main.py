@@ -47,7 +47,8 @@ def extract():
         return jsonify({'error': 'No JSON data provided'}), 400
     
     url = data.get('url')
-    headless = data.get('headless', True)
+    # headless = data.get('headless', True)
+
     username = data.get("username","").strip()
     password = data.get("password","").strip()
 
@@ -67,7 +68,7 @@ def extract():
             logging.info(f"!!!!!!!!!!!!!!!!!!! {folder_name} folder already created!!!!!!!!!!!!!")
         # Run the new extractor function
         json_file_path = os.path.join(folder_name, "header_links.json")
-        links_file = extract_all_links_with_submenus(url, headless=headless, output_file=json_file_path)
+        links_file = extract_all_links_with_submenus(url, headless=True, output_file=json_file_path)
 
         if not links_file or not os.path.exists(links_file):
             return jsonify({'error': 'Failed to create header_links.json file'}), 500
@@ -124,7 +125,7 @@ def extract():
 
                     async def main_login():
                         async with async_playwright() as p:
-                            browser, context = await login_and_get_context(p, username, password,headless=headless)
+                            browser, context = await login_and_get_context(p, username, password, headless=True)
                             if context:
                                 # Continue with the rest of the after-login process
                                 from Header_Links_Ectractor_After_Login import extract_header_links_and_screenshots
@@ -142,7 +143,7 @@ def extract():
 
                     logging.info("📸 Capturing screenshots after login...")
                     from ScreenShot_node_After_Login import Screenshot
-                    asyncio.run(Screenshot(username=username, password=password, base_folder=domain_folder, headless=headless))
+                    asyncio.run(Screenshot(username=username, password=password, base_folder=domain_folder, headless=True))
                     logging.info("✅ Screenshots after login captured.")
 
                     # 🧠 Merge all MindMaps into a single file
@@ -225,7 +226,7 @@ def download_file(filename):
     return send_from_directory(os.getcwd(), filename, as_attachment=True)
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True, use_reloader=False)
+    socketio.run(app, debug=True, use_reloader=False,allow_unsafe_werkzeug=True)
    
 
     
