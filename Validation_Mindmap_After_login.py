@@ -8,7 +8,7 @@ load_dotenv()
 
 # Files
 def validation_after_login(base_folder="."):
-    MM_FILE = os.path.join(base_folder, "Full_Website_Structure_After_Login.mm")
+    MM_FILE = os.path.join(base_folder, "Merged_Website_Structure.mm")
     OUTPUT_FILE = os.path.join(base_folder, "Full_Website_Structure_After_Login_updated.mm")
     # Load OpenAI client
     api_key = os.getenv("OPENAI_API_KEY")
