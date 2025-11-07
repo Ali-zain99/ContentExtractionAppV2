@@ -5,6 +5,9 @@ import base64
 from playwright.async_api import async_playwright # pyright: ignore[reportMissingImports]
 from openai import OpenAI # type: ignore
 from dotenv import load_dotenv # type: ignore
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import re
 
 # -------------------------------
 # CONFIGURATION
@@ -15,7 +18,36 @@ if not api_key:
     raise ValueError("❌ OPENAI_API_KEY not found in .env file")
 client = OpenAI(api_key=api_key)
 
+def normalize_text(text: str) -> str:
+    """Normalize text for consistent matching."""
+    text = text.lower()
+    text = re.sub(r'[^a-z0-9\s]', ' ', text)  # remove symbols
+    text = re.sub(r'\s+', ' ', text)  # collapse spaces
+    return text.strip()
 
+def find_best_url_match(target_name, url_map, threshold=0.85):
+    """Finds the best URL match using cosine similarity on normalized text."""
+    if not url_map:
+        return None
+
+    normalized_map = {normalize_text(k): v for k, v in url_map.items()}
+    target_norm = normalize_text(target_name)
+
+    keys = list(normalized_map.keys())
+    vectorizer = TfidfVectorizer(analyzer="char_wb", ngram_range=(2, 4))
+    vectors = vectorizer.fit_transform([target_norm] + keys)
+    sims = cosine_similarity(vectors[0:1], vectors[1:]).flatten()
+
+    best_index = sims.argmax()
+    best_score = sims[best_index]
+
+    if best_score >= threshold:
+        matched_key = keys[best_index]
+        print(f"🤝 Cosine match → '{target_name}' ≈ '{matched_key}' (score={best_score:.2f})")
+        return matched_key
+    else:
+        print(f"⚠️ No cosine match (max={best_score:.2f}) for {target_name}")
+        return None
 # -------------------------------
 # FUNCTION: TAKE SCREENSHOT
 # -------------------------------
@@ -399,7 +431,15 @@ async def generate_mindmaps_from_headers(
     # --- Ensure output directories exist ---
     os.makedirs(output_folder, exist_ok=True)
     os.makedirs(screenshot_folder, exist_ok=True)
+    # --- Load extracted header links ---
+    with open(extracted_headers_path, "r", encoding="utf-8") as f:
+        header_data = json.load(f)
 
+    header_url_map = {
+        normalize_text(item["text"]): item["href"]
+        for item in header_data if "href" in item
+    }
+    all_outputs = []
     # --- Input validation ---
     print(f"Checking for headers folder at: {headers_folder}")
     if not os.path.exists(headers_folder):
@@ -413,11 +453,6 @@ async def generate_mindmaps_from_headers(
     # --- Load extracted header links ---
     with open(extracted_headers_path, "r", encoding="utf-8") as f:
         header_data = json.load(f)
-
-    header_url_map = {
-        item["text"].strip().lower(): item["href"]
-        for item in header_data if "href" in item
-    }
 
     all_outputs = []
 
@@ -440,8 +475,14 @@ async def generate_mindmaps_from_headers(
             print(f"⚠️ No links found in {header_file}. Skipping...")
             continue
 
-        page_url = header_url_map.get(page_name.lower())
+        page_url = header_url_map.get(normalize_text(page_name))
         print(f"🔍 Mapped page name '{page_name}' to URL: {page_url}")
+
+        if not page_url:
+            print(f"🔍 Trying cosine match for '{page_name}'...")
+            matched_key = find_best_url_match(page_name, header_url_map)
+            if matched_key:
+                page_url = header_url_map.get(matched_key)
         if not page_url:
             print(f"⚠️ No matching URL found for '{page_name}' in header_links.json. Skipping...")
             continue
