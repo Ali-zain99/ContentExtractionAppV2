@@ -44,7 +44,7 @@ def validation(base_folder="."):
     8. If a link’s {texts} contains “login”, “log in”, “sign up”, or “signup” (case-insensitive), then include it as a subnode under the Home Page
     9. Ensure all nodes are properly nested and the XML is valid.
     10. Use hyperlinks (LINK attribute) for nodes that represent pages, linking to their respective URLs.
-
+    11. Properly escape XML entities (`& → &amp;`, `< → &lt;`, `>` → &gt;`). 
     The output must be a well-formed .mm (FreeMind) XML mindmap file without any extra commentary.
     """
 

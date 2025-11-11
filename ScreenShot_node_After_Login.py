@@ -30,7 +30,7 @@ def safe_filename(url: str) -> str:
     return safe[:150]
 
 
-async def login_and_get_context(p, username, password, headless=True):
+async def login_and_get_context(url,p, username, password, headless=True):
     """Logs in (or reuses saved session) and returns authenticated context."""
     browser = await p.chromium.launch(headless=headless)
     context = None
@@ -43,7 +43,7 @@ async def login_and_get_context(p, username, password, headless=True):
             ignore_https_errors=True
         )
         page = await context.new_page()
-        await page.goto("https://www.340bpriceguide.net/", timeout=60000)
+        await page.goto(url, timeout=60000)
         if "Logout" in (await page.content()):
             print("✅ Session still valid, skipping login.")
             await page.close()
@@ -97,7 +97,7 @@ async def login_and_get_context(p, username, password, headless=True):
     except Exception as e:
         print(f"Initial login attempt failed: {e}")
         print("Trying popup login...")
-        await page.goto("https://www.340bpriceguide.net/", timeout=90000)
+        await page.goto(url, timeout=90000)
         login_selectors = [
             "a:has-text('Login')", "button:has-text('Login')", "text=Log in",
             "text=Sign in", "text=My Account",

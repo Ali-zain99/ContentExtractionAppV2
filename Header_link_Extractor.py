@@ -32,9 +32,10 @@ def extract_links(url):
 
 
 def sanitize_filename(name: str) -> str:
-    """Make a safe filename by removing illegal characters."""
-    return "".join(c for c in name if c.isalnum() or c in (" ", "_", "-")).rstrip().replace(" ", "_")
-
+    """Make a safe lowercase filename allowing spaces, underscores, and hyphens."""
+    print(name)
+    safe = "".join(c for c in name if c.isalnum() or c in (" ", "_", "-"))
+    return safe.lower().strip()
 
 def extract_links_from_header_json(header_json_path="header_links.json", base_folder=None):
     """Extract links for each header and save them inside the same folder as header_links.json"""

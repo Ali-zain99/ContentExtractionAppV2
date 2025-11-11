@@ -1,11 +1,11 @@
 def generating_full_mindmapp(base_folder="."):
     import xml.etree.ElementTree as ET
     import os
-
+    print("🔄 Merging 'After Login' mindmap into main mindmap...")
     # Input files
-    main_file = os.path.join(base_folder, "Full_Website_Structure_updated.mm")
+    main_file = os.path.join(base_folder, "Full_Website_Structure_with_screenshots.mm")
     login_file = os.path.join(base_folder, "Full_Website_Structure_After_Login_updated_with_Screenshot.mm")
-    output_file = os.path.join(base_folder, "Merged_Website_Structure.mm")
+    output_file = os.path.join(base_folder, "Merged_Website_Structure_after_login.mm")
 
     # Parse both mindmaps
     main_tree = ET.parse(main_file)
@@ -17,7 +17,7 @@ def generating_full_mindmapp(base_folder="."):
     # Find the "Login" node in the main file
     login_node_main = None
     for node in main_root.iter("node"):
-        if node.attrib.get("TEXT") == "Login":
+        if node.attrib.get("TEXT") == "Login" or node.attrib.get("TEXT") == "Sign up / Sign in":
             login_node_main = node
             break
 
@@ -41,3 +41,7 @@ def generating_full_mindmapp(base_folder="."):
 
     print(f"✅ Merged mindmap saved as {output_file}")
     print("✔️ Any 'Homepage' or 'Home Page' node under 'Login' renamed to 'After Login Flow'.")
+
+if __name__ == "__main__":
+    print("🚀 Starting full mindmap generation...")
+    generating_full_mindmapp(base_folder="340bpriceguide")

@@ -3,6 +3,9 @@ from flask_socketio import SocketIO
 from log_emitter import setup_logging, socketio
 import logging
 from header_extractor1 import extract_all_links_with_submenus
+from header_extractor1 import home_screenshot
+from home_page_link_extractor import extract_links
+from home_page_mindmap import configure_openai, generate_home_mindmap_from_screenshot
 from Header_link_Extractor import extract_links_from_header_json
 from Header_mindmaps import generate_mindmaps_from_headers
 from Merge_All_Header_Mindmap import merge_mindmaps
@@ -25,10 +28,6 @@ app = Flask(__name__, static_folder='static', static_url_path='/static')
 logging.getLogger('socketio').setLevel(logging.WARNING)
 logging.getLogger('engineio').setLevel(logging.WARNING)
 
-
-# Set the logging level for socketio and engineio to WARNING to reduce verbosity
-logging.getLogger('socketio').setLevel(logging.WARNING)
-logging.getLogger('engineio').setLevel(logging.WARNING)
 
 setup_logging(app)
 
@@ -69,6 +68,16 @@ def extract():
             logging.info(f"!!!!!!!!!!!!!!!!!!! {folder_name} folder already created!!!!!!!!!!!!!")
         # Run the new extractor function
         json_file_path = os.path.join(folder_name, "header_links.json")
+        image_path = os.path.join(folder_name, "home_page_screenshot.png")
+        home_screenshot(url, output_path=image_path)
+        home_link=extract_links(url)
+        output_file=os.path.join(folder_name, "home_page_link.json")
+        with open(output_file, "w", encoding="utf-8") as f:
+            json.dump(home_link, f, indent=2)
+        logging.info("Home page links and screenshot captured.")
+        client=configure_openai()
+        generate_home_mindmap_from_screenshot(client,os.path.join(folder_name, "mindmaps"),output_file,image_path)
+        logging.info("Home page mindmap generated.")
         links_file = extract_all_links_with_submenus(url, headless=True, output_file=json_file_path)
 
         if not links_file or not os.path.exists(links_file):
@@ -126,7 +135,7 @@ def extract():
 
                     async def main_login():
                         async with async_playwright() as p:
-                            browser, context = await login_and_get_context(p, username, password, headless=True)
+                            browser, context = await login_and_get_context(url,p, username, password, headless=True)
                             if context:
                                 # Continue with the rest of the after-login process
                                 from Header_Links_Ectractor_After_Login import extract_header_links_and_screenshots
@@ -156,7 +165,7 @@ def extract():
                     # 📝 Add button descriptions
                     logging.info("🧾 Adding button descriptions to final MindMap...")
                     
-                    INPUT_MM = os.path.join(domain_folder, "Merged_Website_Structure.mm")
+                    INPUT_MM = os.path.join(domain_folder, "Merged_Website_Structure_after_login.mm")
                     OUTPUT_MM = os.path.join(domain_folder, "Full_Website_Structure_updated_with_descriptions.mm")
 
                     if not os.path.exists(INPUT_MM):
@@ -180,9 +189,11 @@ def extract():
                 else:
                     logging.info("⚠️ No username/password provided — skipping login section.")
                     # --- Zip the folder if no login is provided ---
-                    INPUT_MM = os.path.join(domain_folder, "Merged_Website_Structure.mm")
+                    print(f" domain folder is {domain_folder}")
+                    
+                    INPUT_MM = os.path.join(domain_folder, "Full_Website_Structure_with_screenshots.mm")
                     OUTPUT_MM = os.path.join(domain_folder, "Full_Website_Structure_updated_with_descriptions.mm")
-
+                    print(f"input file {INPUT_MM}")
                     if not os.path.exists(INPUT_MM):
                         logging.info(f"❌ {INPUT_MM} file not found.")
                     else:

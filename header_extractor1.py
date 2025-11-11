@@ -17,7 +17,8 @@ def extract_all_links_with_submenus(url, headless=False, output_file="header_lin
 
         try:
             print(f"🌐 Visiting: {url}")
-            page.goto(url, wait_until="networkidle")
+            # page.goto(url, wait_until="networkidle")
+            page.goto(url, wait_until="domcontentloaded", timeout=60000)
 
             # --- STEP 1: Scrape all initially visible header links ---
             print("🕵️‍♀️ Extracting initially visible top-level header links...")
@@ -132,10 +133,21 @@ def extract_all_links_with_submenus(url, headless=False, output_file="header_lin
             return None
         finally:
             browser.close()
+            
+def home_screenshot(url, output_path="home_page_screenshot.png"):
+    print(f"📸 Taking screenshot of home page: {url}")
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(url, timeout=60000)
+        page.set_viewport_size({"width": 1280, "height": 720})
+        page.screenshot(path=output_path, full_page=False)
+        browser.close()
+    print(f"✅ Screenshot of home page saved as {output_path}")
 
 
 if __name__ == "__main__":
-    target_url = "https://cellalaw.com/"
+    target_url = "https://dayzee.com/"
     links_file = extract_all_links_with_submenus(target_url, headless=False)
 
     if links_file:
