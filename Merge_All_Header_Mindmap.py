@@ -1,5 +1,7 @@
 import os
 import xml.etree.ElementTree as ET
+import copy
+
 
 import os
 import xml.etree.ElementTree as ET
@@ -86,13 +88,15 @@ def merge_mindmaps(base_folder):
                 continue
 
             # --- Append subnodes ---
+            # sub_children = sub_root.findall("./node")
+            # sub_children = [n for n in sub_root.findall(".//node") if n is not sub_root]
             sub_children = sub_root.findall("./node")
             if not sub_children:
                 print(f"⚠️ No subnodes found in {file_name}.")
                 continue
 
             for child in sub_children:
-                target_node.append(child)
+                target_node.append(copy.deepcopy(child))
 
             print(f"✅ Merged '{page_name}' into Header → {target_node.attrib.get('TEXT')}")
 

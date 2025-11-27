@@ -2,10 +2,22 @@ import os
 import json
 from openai import OpenAI # type: ignore
 from dotenv import load_dotenv # type: ignore
+from opik import configure 
+from opik.integrations.openai import track_openai 
 
 # Load environment variables from .env file
 load_dotenv()
-
+def configure_openai():
+    """Configure OpenAI GPT client with Opik tracing."""
+    load_dotenv()
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    if not OPENAI_API_KEY:
+        raise ValueError("❌ OPENAI_API_KEY not found in .env file.")
+    
+    # Initialize Opik
+    configure()
+    client = OpenAI(api_key=OPENAI_API_KEY)
+    return track_openai(client)
 # Files
 def validation_after_login(base_folder="."):
     MM_FILE = os.path.join(base_folder, "Merged_Website_Structure.mm")
@@ -14,7 +26,7 @@ def validation_after_login(base_folder="."):
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         raise ValueError("❌ OPENAI_API_KEY not found in .env file")
-    client = OpenAI(api_key=api_key)
+    client = configure_openai()
 
     # Load files
     with open(MM_FILE, "r", encoding="utf-8") as f:
@@ -31,7 +43,7 @@ def validation_after_login(base_folder="."):
     - Main Content
     - Footer
     3. The "Header" and "Footer" should appear only once, under the Home Page. The content inside them should not include in any other page.
-    4. Every other page (e.g.,Search, About, Contact, etc.) must be direct subnodes of the header.
+    4. Every other page (e.g.,Search, About, Contact, etc.) must be direct subnodes of the Header.
     5. Each page node must include all its UI elements (buttons, forms, links, and content) as nested subnodes.
     6. If any page contains subpages, represent them as child nodes under that page.
     7. Maintain a clear hierarchical structure that accurately reflects parent-child relationships between pages and their components.
@@ -64,7 +76,6 @@ def validation_after_login(base_folder="."):
     Final hirarchical structure must be:
     Home Page
     ├── Header
-    ├── [Other Pages like About, Contact ,search etc.]
     |---Home Page Content
     ├── Footer
 
@@ -72,12 +83,12 @@ def validation_after_login(base_folder="."):
 
     # Call GPT
     response = client.chat.completions.create(
-        model="gpt-4.1-mini",   # or "gpt-4o-mini" if you want faster/cheaper
+        model="gpt-4.1",   # or "gpt-4o-mini" if you want faster/cheaper
         messages=[
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": full_prompt},
         ],
-        temperature=0
+        # temperature=0
     )
     mindmap_content = response.choices[0].message.content.strip()
 
